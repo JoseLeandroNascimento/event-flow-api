@@ -1,15 +1,18 @@
+# Build PocketBase image
 FROM alpine:latest
 
-WORKDIR /app
+# Install CURL & NGINX
+RUN apk add --no-cache curl nginx
 
-RUN apk add --no-cache wget unzip
+# Copy PocketBase binary
+COPY pocketbase /app/pocketbase
+RUN chmod +x /app/pocketbase
 
-# Baixa a versão mais recente do PocketBase (linux amd64)
-RUN wget https://github.com/pocketbase/pocketbase/releases/download/v0.21.0/pocketbase_0.21.0_linux_amd64.zip \
-    && unzip pocketbase_0.21.0_linux_amd64.zip \
-    && chmod +x pocketbase \
-    && rm pocketbase_0.21.0_linux_amd64.zip
+# Copy nginx config
+COPY nginx.conf /etc/nginx/nginx.conf
 
-EXPOSE 8090
+# Expose HTTP port
+EXPOSE 8080
 
-CMD ["./pocketbase", "serve", "--http=0.0.0.0:8090"]
+# Start NGINX + PocketBase
+CMD sh -c "/app/pocketbase serve --http=127.0.0.1:8090 & nginx -g 'daemon off;'"
