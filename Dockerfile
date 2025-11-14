@@ -1,10 +1,5 @@
-FROM alpine
-
-WORKDIR /app
-
-COPY pocketbase /app/pocketbase
-RUN chmod +x /app/pocketbase
+FROM nluedtke/pocketbase:latest
 
 EXPOSE 8090
 
-CMD ["./pocketbase", "serve", "--http=0.0.0.0:8090"]
+CMD ["serve", "--http=0.0.0.0:8090"]
